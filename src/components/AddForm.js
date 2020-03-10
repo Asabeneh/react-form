@@ -1,11 +1,11 @@
-import React, { Component } from 'react'
+import React, { useState } from 'react'
 import InputField from './shared/InputField'
 import validator from 'validator'
 import SelectField from './shared/SelectField'
 import TextareaField from './shared/TextareaField'
 
-class AddForm extends Component {
-  state = {
+const AddForm = props => {
+  const initialState = {
     firstName: '',
     lastName: '',
     email: '',
@@ -24,27 +24,26 @@ class AddForm extends Component {
     }
   }
 
-  handleChange = e => {
+  const [formData, setFormData] = useState(initialState)
+
+  const handleChange = e => {
     const { name, value, type, checked } = e.target
     if (type === 'checkbox') {
-      this.setState({
-        skills: { ...this.state.skills, [name]: checked }
-      })
+      setFormData({ ...formData.skills, [name]: checked })
     } else {
-      this.setState({ [name]: value })
+      const data = { ...formData, [name]: value }
+      setFormData(data)
     }
   }
-  handleBlur = e => {
+  const handleBlur = e => {
     const { name } = e.target
 
     this.setState({
-      touched: { ...this.state.touched, [name]: true }
+      touched: { ...formData.touched, [name]: true }
     })
-
-    console.log('Blurring')
   }
 
-  validate = () => {
+  const validate = () => {
     const errors = {
       firstName: '',
       lastName: '',
@@ -68,7 +67,7 @@ class AddForm extends Component {
     return errors
   }
 
-  handleSubmit = e => {
+  const handleSubmit = e => {
     e.preventDefault()
     const {
       firstName,
@@ -98,144 +97,139 @@ class AddForm extends Component {
       file,
       skills: formattedSkills
     }
-    console.log(data)
   }
-  render() {
-    const errors = this.validate()
-    const options = [
-      {
-        value: '',
-        label: '-- Select Option--'
-      },
-      {
-        value: 'Finland',
-        label: 'Finland'
-      },
-      {
-        value: 'Sweden',
-        label: 'Sweden'
-      },
-      {
-        value: 'Norway',
-        label: 'Norway'
-      },
-      {
-        value: 'Denmark',
-        label: 'Denmark'
-      }
-    ]
-    return (
-      <form onSubmit={this.handleSubmit}>
-        <fieldset>
-          <legend>React Form and Form Validation</legend>
-          <InputField
-            type='text'
-            name='firstName'
-            value={this.state.firstName}
-            onChange={this.handleChange}
-            onBlur={this.handleBlur}
-            placeholder='First Name'
-            error={errors.firstName}
-          />
-          <InputField
-            type='text'
-            name='lastName'
-            value={this.state.lastName}
-            onChange={this.handleChange}
-            onBlur={this.handleBlur}
-            placeholder='Last Name'
-            error={errors.lastName}
-          />
-          <InputField
-            type='email'
-            name='email'
-            value={this.state.email}
-            onChange={this.handleChange}
-            onBlur={this.handleBlur}
-            placeholder='Email'
-            error={errors.email}
-          />
 
-          <SelectField
-            options={options}
-            name='country'
-            onChange={this.handleChange}
-          />
+  const errors = validate()
+  const options = [
+    {
+      value: '',
+      label: '-- Select Option--'
+    },
+    {
+      value: 'Finland',
+      label: 'Finland'
+    },
+    {
+      value: 'Sweden',
+      label: 'Sweden'
+    },
+    {
+      value: 'Norway',
+      label: 'Norway'
+    },
+    {
+      value: 'Denmark',
+      label: 'Denmark'
+    }
+  ]
 
-          <div>
-            <p>Gender</p>
-            <InputField
-              label='Female'
-              type='radio'
-              id='female'
-              name='gender'
-              value='Female'
-              onChange={this.handleChange}
-              checked={this.state.gender === 'Female'}
-            />
-            <InputField
-              label='Male'
-              id='male'
-              type='radio'
-              name='gender'
-              value='Male'
-              onChange={this.handleChange}
-              checked={this.state.gender === 'Male'}
-            />
-            <InputField
-              label='Other'
-              id='other'
-              type='radio'
-              name='gender'
-              value='Other'
-              onChange={this.handleChange}
-              checked={this.state.gender === 'Other'}
-            />
-          </div>
+  return (
+    <form onSubmit={handleSubmit}>
+      <fieldset>
+        <legend>React Form and Form Validation</legend>
+        <InputField
+          type='text'
+          name='firstName'
+          value={this.state.firstName}
+          onChange={handleChange}
+          onBlur={handleBlur}
+          placeholder='First Name'
+          error={errors.firstName}
+        />
+        <InputField
+          type='text'
+          name='lastName'
+          value={this.state.lastName}
+          onChange={handleChange}
+          onBlur={handleBlur}
+          placeholder='Last Name'
+          error={errors.lastName}
+        />
+        <InputField
+          type='email'
+          name='email'
+          value={this.state.email}
+          onChange={handleChange}
+          onBlur={handleBlur}
+          placeholder='Email'
+          error={errors.email}
+        />
 
-          <div>
-            <p>Select your skills</p>
-            <InputField
-              label='HTML'
-              type='checkbox'
-              id='html'
-              name='html'
-              onChange={this.handleChange}
-            />
-            <InputField
-              label='CSS'
-              type='checkbox'
-              id='css'
-              name='css'
-              onChange={this.handleChange}
-            />
-            <InputField
-              label='JavaScript'
-              type='checkbox'
-              id='javascript'
-              name='javascript'
-              onChange={this.handleChange}
-            />
-            <InputField
-              label='React'
-              type='checkbox'
-              id='react'
-              name='React'
-              onChange={this.handleChange}
-            />
-          </div>
-          <TextareaField
-            label='Bio'
-            name='bio'
-            value={this.state.bio}
-            onChange={this.handleChange}
+        <SelectField options={options} name='country' onChange={handleChange} />
+
+        <div>
+          <p>Gender</p>
+          <InputField
+            label='Female'
+            type='radio'
+            id='female'
+            name='gender'
+            value='Female'
+            onChange={handleChange}
+            checked={this.state.gender === 'Female'}
           />
-          <InputField type='file' name='file' onChange={this.handleChange} />
-          <button>Submit</button>
-        </fieldset>
-      </form>
-    )
-  }
+          <InputField
+            label='Male'
+            id='male'
+            type='radio'
+            name='gender'
+            value='Male'
+            onChange={handleChange}
+            checked={this.state.gender === 'Male'}
+          />
+          <InputField
+            label='Other'
+            id='other'
+            type='radio'
+            name='gender'
+            value='Other'
+            onChange={handleChange}
+            checked={this.state.gender === 'Other'}
+          />
+        </div>
+
+        <div>
+          <p>Select your skills</p>
+          <InputField
+            label='HTML'
+            type='checkbox'
+            id='html'
+            name='html'
+            onChange={handleChange}
+          />
+          <InputField
+            label='CSS'
+            type='checkbox'
+            id='css'
+            name='css'
+            onChange={handleChange}
+          />
+          <InputField
+            label='JavaScript'
+            type='checkbox'
+            id='javascript'
+            name='javascript'
+            onChange={handleChange}
+          />
+          <InputField
+            label='React'
+            type='checkbox'
+            id='react'
+            name='React'
+            onChange={handleChange}
+          />
+        </div>
+        <TextareaField
+          label='Bio'
+          name='bio'
+          value={this.state.bio}
+          onChange={handleChange}
+        />
+        <InputField type='file' name='file' onChange={handleChange} />
+        <button>Submit</button>
+      </fieldset>
+    </form>
+  )
 }
 
 export default AddForm
